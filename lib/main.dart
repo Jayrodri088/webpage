@@ -34,6 +34,8 @@ class _BackgroundPageState extends State<BackgroundPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -47,15 +49,15 @@ class _BackgroundPageState extends State<BackgroundPage> {
           // Main Content
           Column(
             children: [
-              // Navigation Bar
-              _buildNavBar(),
+              // Responsive Navigation Bar
+              _buildNavBar(screenWidth),
               Expanded(
                 child: Row(
                   children: [
-                    // Sidebar
-                    _buildSidebar(),
+                    // Sidebar only shows for larger screens
+                    if (screenWidth >= 800) _buildSidebar(),
                     // Main Content Area
-                    _buildContentArea(),
+                    Expanded(child: _buildContentArea(screenWidth)),
                   ],
                 ),
               ),
@@ -66,8 +68,8 @@ class _BackgroundPageState extends State<BackgroundPage> {
     );
   }
 
-  // Build the NavBar Widget
-  Widget _buildNavBar() {
+  // Responsive NavBar Widget
+  Widget _buildNavBar(double screenWidth) {
     return Container(
       height: 70,
       color: const Color(0xFFF4F6FC), // Light blue-grayish background
@@ -80,8 +82,8 @@ class _BackgroundPageState extends State<BackgroundPage> {
             children: [
               Image.asset(
                 "assets/logo.png",
-                width: 50,
-                height: 50,
+                width: 100,
+                height: 100,
               ),
               const SizedBox(width: 10),
               const Text(
@@ -92,49 +94,50 @@ class _BackgroundPageState extends State<BackgroundPage> {
                   color: Colors.blue,
                 ),
               ),
-              const SizedBox(width: 50), // Spacing between title and "Dashboard"
-              const Text(
-                "Dashboard",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Colors.black,
+              if (screenWidth >= 600) ...[
+                const SizedBox(width: 50), // Space for medium/large screens
+                const Text(
+                  "Dashboard",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
           // Right Section (Search Bar, Notification, Profile)
           Row(
             children: [
-              // Search Bar
-              Container(
-                width: 300,
-                height: 40,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
+              if (screenWidth >= 800)
+                Container(
+                  width: 300,
+                  height: 40,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.search, color: Colors.grey),
+                      SizedBox(width: 10),
+                      Text(
+                        "Search anything here...",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
                 ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.search, color: Colors.grey),
-                    SizedBox(width: 10),
-                    Text(
-                      "Search anything here...",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 20),
-              // Notification Icon
+              if (screenWidth >= 600) const SizedBox(width: 20),
               Container(
                 width: 40,
                 height: 40,
@@ -155,7 +158,6 @@ class _BackgroundPageState extends State<BackgroundPage> {
                 ),
               ),
               const SizedBox(width: 20),
-              // Profile
               const Row(
                 children: [
                   CircleAvatar(
@@ -180,10 +182,10 @@ class _BackgroundPageState extends State<BackgroundPage> {
     );
   }
 
-  // Build the Sidebar Widget
+  // Responsive Sidebar Widget
   Widget _buildSidebar() {
     return Container(
-      width: 220, // Sidebar width
+      width: 220,
       color: const Color(0xFFF4F6FC), // Light blue-grayish background
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,49 +261,51 @@ class _BackgroundPageState extends State<BackgroundPage> {
     );
   }
 
-  // Build the Content Area Widget
-  Widget _buildContentArea() {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Breadcrumb and Last Updated on the same line
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Dashboard > Home",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
+  // Responsive Content Area
+  Widget _buildContentArea(double screenWidth) {
+    return Container(
+      color: Colors.transparent,
+      padding: screenWidth < 800
+          ? const EdgeInsets.all(8.0)
+          : const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Breadcrumb and Last Updated on the same line
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Dashboard > Home",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+              Row(
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.yellow,
+                    ),
                   ),
-                ),
-                Row(
-                  children: [
-                    Container(
-                      width: 10,
-                      height: 10,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.yellow,
-                      ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    "Last Updated: Nov 26, 2024 - 09:56 AM",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      "Last Updated: Nov 26, 2024 - 09:56 AM",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const Spacer(),
+        ],
       ),
     );
   }
